@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospital Referral Form</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>University Hospital</h2>
+
+      <form action="/log" method="post">
+        <div class="form-section one">
+          <label>Date</label>
+<!--          <input type="date" name="date" id="form-date" />-->
+          {{today}}
+        </div>
+
+        <div class="form-section two">
+          <div class="patient-registration">
+            <label for="patient-reg-no">Patient Reg. No.</label>
+            <input type="text" id="patient-reg-no" name="patient-reg-no" />
+          </div>
+
+          <div class="referral-number">
+            <label >Referral No.</label>
+            {{referral_no}}
+          </div>
+        </div>
+
+        <div class="form-section three">
+          <label for="facility-referred"></label>
+          <input
+            type="text"
+            id="facility-referred"
+            name="facility-referred"
+            placeholder="Name & Address of Health Facility Referred To"
+          />
+          <div class="time">
+            <div>
+              <label for="time-referred">Time Referred</label>
+            <input
+              type="time"
+              id="time-referred"
+              name="time-referred"
+            />
+            </div>
+
+
+            <div>
+              <label for="departure">Time of Departure (if Emergency)</label>
+            <input
+              type="time"
+              id="departure"
+              name="departure-time"
+
+            />
+            </div>
+          </div>
+        </div>
+
+        <h3>Patient/Client Information</h3>
+        <div class="form-section four">
+          <label for="surname">Surname</label>
+          <input type="text" id="surname" name="surname" />
+
+          <label for="other-names">Other Names</label>
+          <input type="text" id="other-names" name="other-names" />
+
+          <div class="client-info">
+            <div class="client">
+              <label>Sex</label>
+              <div class="radio-group">
+                <label for="male"
+                  ><input type="radio" id="male" name="sex" value="Male" />
+                  Male</label
+                >
+                <label for="female"
+                  ><input type="radio" id="female" name="sex" value="Female" />
+                  Female</label
+                >
+              </div>
+            </div>
+
+            <div class="client">
+              <label for="dob">Date of Birth</label>
+              <input type="date" id="dob" name="dob" />
+            </div>
+
+            <div class="client">
+              <label for="age">Age</label>
+              <input type="text" id="age" name="age"/>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="form-section five">
+          <label for="contact-person"
+            >Name & Address of Contact Person/Relative</label
+          >
+          <input type="text" id="contact-person" name="contact-person" />
+
+          <label for="contact-number">Telephone No. of Contact Person</label>
+          <input type="text" id="contact-number" name="contact-number" />
+        </div>
+
+        <h3>Examination Findings</h3>
+        <div class="form-section six">
+          <div class="findings">
+            <label for="temperature">Temperature</label>
+            <input type="text" id="temperature" name="temperature" />
+          </div>
+          <div class="findings">
+            <label for="pulse">Pulse</label>
+            <input type="text" id="pulse" name="pulse" />
+          </div>
+          <div class="findings">
+            <label for="respiratory-rate">Respiratory Rate</label>
+            <input type="text" id="respiratory-rate" name="respiratory-rate" />
+          </div>
+          <div class="findings">
+            <label for="bp">BP</label> <input type="text" id="bp" name="bp" />
+          </div>
+          <div class="findings">
+            <label for="weight">WT</label>
+            <input type="text" id="weight" name="weight" />
+          </div>
+        </div>
+
+        <div class="form-section seven">
+          <label for="complaints"
+            >Presenting Complaints</label
+          >
+          <textarea id="complaints" name="complaints"></textarea>
+        </div>
+
+        <div class="form-section eight">
+          <label for="diagnosis">Diagnosis</label>
+          <textarea id="diagnosis" name="diagnosis"></textarea>
+        </div>
+
+
+        <div class="form-section ten">
+          <label for="referral-comments"
+            >Reason for Referral and Comment for Next Level</label
+          >
+          <textarea id="referral-comments" name="referral-comments"></textarea>
+        </div>
+
+        <div class="form-section eleven">
+          <label for="officer-name">Name of Officer Referring</label>
+          <input type="text" id="officer-name" name="officer-name" />
+
+<!--          <label for="position">Position</label>-->
+<!--          <input type="text" id="position" name="position" />-->
+
+<!--          <label for="signature">Signature</label>-->
+<!--          <input type="text" id="signature" name="signature" />-->
+
+<!--          <label for="date">Date</label>-->
+<!--          <input type="date" id="date" name="date" />-->
+
+<!--          <label for="contact-officer">Contact(s) of Officer Referring</label>-->
+<!--          <input type="text" id="contact-officer" name="contact-officer" />-->
+        </div>
+        <div class="form-section twelve">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
