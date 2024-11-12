@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hospital Referral Form</title>
     <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}" />
+
   </head>
   <body>
     <div class="form-container">
@@ -22,7 +23,9 @@
           <div class="patient-registration">
             <label for="patient-reg-no">Patient Reg. No.</label>
             <input type="text" id="patient-reg-no" name="patient-reg-no" />
+
           </div>
+
 
           <div class="referral-number">
             <label >Referral No.</label>
@@ -86,12 +89,12 @@
 
             <div class="client">
               <label for="dob">Date of Birth</label>
-              <input type="date" id="dob" name="dob" />
+              <input type="date" id="dob" name="dob" onchange="calculateAge()"/>
             </div>
 
             <div class="client">
               <label for="age">Age</label>
-              <input type="text" id="age" name="age"/>
+              <input type="text" id="age" name="age" readonly/>
             </div>
 
 
@@ -172,5 +175,33 @@
         </div>
       </form>
     </div>
+
+    <script>
+      function calculateAge()
+      {
+        const dobInput = document.getElementById("dob").value;
+        const dob = new Date(dobInput);
+        const today = new Date();
+
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        const dayDiff = today.getDate() - dob.getDate();
+
+
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            age--;
+        }
+
+        if (age < 0 || age > 130) {
+            document.getElementById("age").value = "";
+            alert("Please enter a valid date of birth.");
+        }
+        else {
+            document.getElementById("age").value = age;
+        }
+       }
+
+
+    </script>
   </body>
 </html>
