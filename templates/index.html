@@ -5,11 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hospital Referral Form</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}" />
 
   </head>
   <body>
     <div class="form-container">
+<!--      <h2><img src="{{url_for('static', filename='UHS_LOGO.png')}}">University Hospital</h2>-->
       <h2>University Hospital</h2>
 
       <form action="/log" method="post">
@@ -21,9 +23,9 @@
 
         <div class="form-section two">
           <div class="patient-registration">
-            <label for="patient-reg-no">Patient Reg. No.</label>
-            <input type="text" id="patient-reg-no" name="patient-reg-no" />
-
+            <label for="patient-reg-no">Folder No.</label>
+            <input type="text" id="patient-reg-no" name="patient-reg-no" autocomplete="off" oninput="fetchPatientSuggestions(this.value)"/>
+            <div id="suggestions"></div>
           </div>
 
 
@@ -92,7 +94,7 @@
               <input type="date" id="dob" name="dob" onchange="calculateAge()"/>
             </div>
 
-            <div class="client">
+            <div class="client p-age">
               <label for="age">Age</label>
               <input type="text" id="age" name="age" readonly/>
             </div>
@@ -111,7 +113,7 @@
           <input type="text" id="contact-number" name="contact-number" />
         </div>
 
-        <h3>Examination Findings</h3>
+                <h3>Examination Findings</h3>
         <div class="form-section six">
           <div class="findings">
             <label for="temperature">Temperature</label>
@@ -119,27 +121,41 @@
           </div>
           <div class="findings">
             <label for="pulse">Pulse</label>
-            <input type="text" id="pulse" name="pulse" />
+            <input type="number" id="pulse" name="pulse" />
           </div>
           <div class="findings">
-            <label for="respiratory-rate">Respiratory Rate</label>
-            <input type="text" id="respiratory-rate" name="respiratory-rate" />
+            <label for="respiratory-rate">R.R</label>
+            <input type="number" id="respiratory-rate" name="respiratory-rate" />
           </div>
+
           <div class="findings">
-            <label for="bp">BP</label> <input type="text" id="bp" name="bp" />
+            <p class="bp">BP</p>
+            <div class="BP-Values">
+              <label for="systolic"></label>
+              <input type="number" name="systolic" id="systolic" />
+              <p class="slash">/</p>
+              <label for="diastolic"></label>
+              <input type="number" name="diastolic" id="diastolic" />
+            </div>
           </div>
+
           <div class="findings">
             <label for="weight">WT</label>
             <input type="text" id="weight" name="weight" />
           </div>
+
+          <div class="findings">
+            <label for="tewsCode">TEW Score</label>
+            <input type="number" name="tewsCode" id="tewsCode" />
+          </div>
         </div>
 
-        <div class="form-section seven">
-          <label for="complaints"
-            >Presenting Complaints</label
-          >
-          <textarea id="complaints" name="complaints"></textarea>
-        </div>
+<!--        <div class="form-section seven">-->
+<!--          <label for="complaints"-->
+<!--            >Presenting Complaints</label-->
+<!--          >-->
+<!--          <textarea id="complaints" name="complaints"></textarea>-->
+<!--        </div>-->
 
         <div class="form-section eight">
           <label for="diagnosis">Diagnosis</label>
@@ -176,32 +192,6 @@
       </form>
     </div>
 
-    <script>
-      function calculateAge()
-      {
-        const dobInput = document.getElementById("dob").value;
-        const dob = new Date(dobInput);
-        const today = new Date();
-
-        let age = today.getFullYear() - dob.getFullYear();
-        const monthDiff = today.getMonth() - dob.getMonth();
-        const dayDiff = today.getDate() - dob.getDate();
-
-
-        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-            age--;
-        }
-
-        if (age < 0 || age > 130) {
-            document.getElementById("age").value = "";
-            alert("Please enter a valid date of birth.");
-        }
-        else {
-            document.getElementById("age").value = age;
-        }
-       }
-
-
-    </script>
+    <script src="{{url_for('static', filename='script.js')}}">   </script>
   </body>
 </html>

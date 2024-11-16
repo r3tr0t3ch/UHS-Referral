@@ -32,6 +32,7 @@ class ReferralInfo(db.Model):
     __tablename__ = "referral_info"
     id = db.Column(db.Integer, primary_key=True)
     referral_no = db.Column(db.String(6), nullable=False)
+    referral_date = db.Column(db.Date, nullable=False)
 
     patient_id = db.Column(db.Integer, db.ForeignKey("patient_info.id"))
     patient_referred = db.relationship("PatientInfo", back_populates="referralinfo")
@@ -39,14 +40,18 @@ class ReferralInfo(db.Model):
     referred_from = db.Column(db.String(200), nullable=False, default="University Hospital, KNUST")
     referral_time = db.Column(db.String(15), nullable=False)
     departure_time = db.Column(db.String(15), nullable=False)
+
     # vitals
     temperature = db.Column(db.Float, nullable=False)
     pulse = db.Column(db.Integer, nullable=False)
     resp_rate = db.Column(db.Integer, nullable=True)
-    bp = db.Column(db.String(7), nullable=False)
+    bp_sys = db.Column(db.Integer, nullable=False)
+    bp_dias = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Float, nullable=True)
+    tews = db.Column(db.Integer, nullable=False)
+
     # mos entry
-    patient_complaints = db.Column(db.String(250), nullable=False)
+
     diagnosis = db.Column(db.String(100), nullable=False)
     referral_comment = db.Column(db.String(250), nullable=False)
     mo = db.Column(db.String(100), nullable=False)
@@ -92,7 +97,6 @@ def save_patientinfo():
     patient.relative = relative
     patient.relative_contact = relative_contact
 
-
     db.session.add(patient)
     db.session.commit()
 
@@ -100,62 +104,76 @@ def save_patientinfo():
 def save_referralinfo():
     """Collects Referral specific Info from form and saves to the database."""
     patient_reg_no = request.form["patient-reg-no"]
+
+    referral_date = today
     facility_referred = request.form["facility-referred"]
     time_referred = request.form["time-referred"]
     departure_time = request.form["departure-time"]
 
-    temperature = request.form["temperature"]
-    pulse = request.form["pulse"]
-    resp_rate = request.form["respiratory-rate"]
-    bp = request.form["bp"]
-    weight = request.form["weight"]
+    temperature = float(request.form["temperature"])
+    pulse = int(request.form["pulse"])
+    resp_rate = int(request.form["respiratory-rate"])
+    bp_sys = int(request.form["systolic"])
+    bp_dias = int(request.form["diastolic"])
+    weight = float(request.form["weight"])
+    tews = int(request.form["tewsCode"])
 
-    complaints = request.form["complaints"]
+    # complaints = request.form["complaints"]
     diagnosis = request.form['diagnosis']
     referral_comment = request.form['referral-comments']
     mo = request.form['officer-name']
 
     referral = ReferralInfo()
     referral.patient_referred = PatientInfo.query.filter_by(patient_no=patient_reg_no).first()
+    referral.referral_date = referral_date
     referral.referral_no = referral_no
     referral.referral_time = time_referred
     referral.departure_time = departure_time
     referral.temperature = temperature
     referral.pulse = pulse
     referral.resp_rate = resp_rate
-    referral.bp = bp
+    referral.bp_sys = bp_sys
+    referral.bp_dias = bp_dias
     referral.weight = weight
-    referral.patient_complaints = complaints
+    referral.tews = tews
+    # referral.patient_complaints = complaints
     referral.diagnosis = diagnosis
     referral.referral_comment = referral_comment
     if facility_referred:
         referral.referred_from = facility_referred
-    else:
-        pass
     referral.mo = mo
 
     db.session.add(referral)
     db.session.commit()
 
 
-@app.route('/check_patient', methods=['POST'])
-def check_patient():
-    patient_no = request.json.get('patient_reg_no')  # Assuming you're using JSON data
-    patient = PatientInfo.query.filter_by(patient_no=patient_no).first()
+@app.route('/api/search-patients', methods=['GET'])
+def search_patients():
+    query = request.args.get('query', '')
 
-    if patient:
-        # Return the patient data as JSON
-        return jsonify({
-            "status": "success",
-            "patient": {
-                "patient_no": patient.patient_no,
-                "name": patient.name,
-                "dob": patient.dob,
-                # Add other relevant fields here
-            }
+    if len(query) < 3:
+        return jsonify([])
+
+    # Search for patients where patient_no contains the query
+    patients = PatientInfo.query.filter(
+        PatientInfo.patient_no.ilike(f'%{query}%')
+    ).all()
+
+    # Format the results
+    results = []
+    for patient in patients:
+        results.append({
+            'registrationNumber': patient.patient_no,
+            'surname': patient.last_name,
+            'otherNames': patient.other_names,
+            'sex': patient.sex,
+            'dateOfBirth': patient.dob.strftime('%Y-%m-%d'),
+            'age': patient.age,
+            'contactPerson': patient.relative,
+            'contactNumber': patient.relative_contact
         })
-    else:
-        return jsonify({"status": "not_found"}), 404
+
+    return jsonify(results)
 
 
 @app.route('/log', methods=['POST', 'GET'])
