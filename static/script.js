@@ -41,6 +41,7 @@ document.getElementById("patient-reg-no").addEventListener("input", (e) => {
     }, 300);
 });
 
+
 // Populate form fields based on selected patient
 function populatePatientInfo(patient) {
     document.getElementById("patient-reg-no").value = patient.registrationNumber;
@@ -51,15 +52,14 @@ function populatePatientInfo(patient) {
     document.getElementById("contact-person").value = patient.contactPerson;
     document.getElementById("contact-number").value = patient.contactNumber;
 
-
     const sexElement = document.getElementById(patient.sex.toLowerCase());
     if (sexElement) {
         sexElement.checked = true;
     }
 
-
     document.getElementById("suggestions").style.display = "none";
 }
+
 
 function calculateAge()
       {
@@ -83,3 +83,37 @@ function calculateAge()
             document.getElementById("age").value = age;
         }
        }
+
+
+//async function fetchPatientSuggestions(query) {
+//    if (query.length < 3) {
+//        document.getElementById("nav-suggestions").style.display = "none";
+//        return;
+//    }
+//
+//    try {
+//        const response = await fetch(`/api/search-patients?query=${encodeURIComponent(query)}`);
+//        if (!response.ok) {
+//            throw new Error('Network response was not ok');
+//        }
+//
+//        const patients = await response.json();
+//
+//        // Display suggestions in the dropdown
+//        const suggestionsBox = document.getElementById("nav-suggestions");
+//        suggestionsBox.innerHTML = "";
+//
+//        patients.forEach((patient) => {
+//            const suggestionItem = document.createElement("div");
+//            suggestionItem.className = "suggestion-item";
+//            suggestionItem.textContent = `${patient.registrationNumber}`;
+////            suggestionItem.onclick = () => populatePatientInfo(patient);
+//            suggestionsBox.appendChild(suggestionItem);
+//        });
+//
+//        suggestionsBox.style.display = patients.length ? "block" : "none";
+//    } catch (error) {
+//        console.error('Error fetching patient suggestions:', error);
+//        document.getElementById("nav-suggestions").style.display = "none";
+//    }
+//}

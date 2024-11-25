@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Referrals</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="https://uhs.knust.edu.gh/" class="navbar-brand">
+                <img src="{{url_for('static', filename='UHS_LOGO.png')}}" alt="KNUST University Health Services Logo" class="navbar-logo">
+            </a>
+            <div class="navbar-links">
+                <a href="/">Home</a>
+                <a href="/search">Patient Records</a>
+                <a href="#">Reports</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-container">
+        <h2>Search Referrals</h2>
+
+        <div class="search-options">
+            <div class="search-option">
+                <h3>Search by Patient Registration Number</h3>
+                <form id="reg-search-form" onsubmit="handleRegSearch(event)">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="reg-search"
+                            name="reg-search"
+                            placeholder="Enter registration number"
+                            autocomplete="off">
+                        <div id="reg-suggestions" class="suggestions-dropdown"></div>
+                    </div>
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+            </div>
+
+            <div class="search-option">
+                <h3>Search by Referral Date</h3>
+                <form id="date-search-form" onsubmit="handleDateSearch(event)">
+                    <input
+                        type="date"
+                        id="date-search"
+                        name="date-search"
+                        required>
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <table id="results-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Referral Date</th>
+                        <th>Patient No</th>
+                        <th>Patient Name</th>
+                        <th>Diagnosis</th>
+                        <th>Reason for Referral</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+            </table>
+        </div>
+
+        <div id="referral-details" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Referral Details</h3>
+                <div id="detail-content"></div>
+            </div>
+        </div>
+    </div>
+    <script src="{{url_for('static', filename='search.js')}}"></script>
+</body>
+</html>
