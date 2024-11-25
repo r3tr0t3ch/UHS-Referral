@@ -36,7 +36,7 @@ async function fetchRegistrationSuggestions(query) {
     }
 
     try {
-        const response = await fetch(`/api/search-patients?query=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/search-clients?query=${encodeURIComponent(query)}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -48,7 +48,7 @@ async function fetchRegistrationSuggestions(query) {
         patients.forEach(patient => {
             const item = document.createElement('div');
             item.className = 'suggestion-item';
-            item.textContent = `${patient.registrationNumber} - ${patient.surname} ${patient.otherNames}`;
+            item.textContent = `${patient.registrationNumber}`;
             item.onclick = () => {
                 document.getElementById('reg-search').value = patient.registrationNumber;
                 selectedRegNo = patient.registrationNumber;
@@ -67,11 +67,20 @@ async function fetchRegistrationSuggestions(query) {
 // Search by registration number
 async function searchByRegistration(regNo) {
     try {
+        console.log(`Searching for referrals with EXACT registration number: "${regNo}"`);
         const response = await fetch(`/api/search-referrals/registration/${encodeURIComponent(regNo)}`);
+
+        console.log('Response status:', response.status);
+
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error response text:', errorText);
             throw new Error('Network response was not ok');
         }
+
         const referrals = await response.json();
+        console.log('Referrals received:', referrals);
+
         displayResults(referrals);
     } catch (error) {
         console.error('Error searching by registration:', error);

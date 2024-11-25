@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, jsonify
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, func
+from http import HTTPStatus
 from dotenv import load_dotenv
 import os
 import random
@@ -37,6 +39,7 @@ def create_app():
     return app
 
 app = create_app()
+
 
 
 # Database Models with type hints
@@ -132,8 +135,6 @@ def search_patients():
         return jsonify({'error': 'Search failed'}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-
-
 def ref_no_gen():
     global referral_no
     referral_no = str(random.randint(0, 99999)).zfill(5)
@@ -208,7 +209,6 @@ def save_referralinfo():
     db.session.commit()
 
 
-
 @app.route('/log', methods=['POST', 'GET'])
 def log():
     patient_reg_no = request.form["patient-reg-no"]
@@ -226,21 +226,48 @@ def search_page():
     return render_template('search.html')
 
 
-@app.route('/api/search-referrals/registration/<reg_no>')
+@app.route('/api/search-referrals/registration/<path:reg_no>')
 def search_referrals_by_registration(reg_no):
     try:
-        patient = PatientInfo.query.filter_by(patient_no=reg_no).first()
-        if not patient:
-            return jsonify([])
+        # URL decode the registration number if needed
+        import urllib.parse
+        reg_no = urllib.parse.unquote(reg_no)
 
+        print(f"Searching for referrals with registration number: {reg_no}")  # Debug print
+
+        # First, check if the patient exists
+        patient = PatientInfo.query.filter_by(patient_no=reg_no).first()
+
+        if not patient:
+            print(f"No patient found with registration number: {reg_no}")  # Debug print
+            return jsonify({'error': 'No patient found with this registration number'}), 404
+
+        # Find referrals for this patient
         referrals = ReferralInfo.query.filter_by(patient_id=patient.id) \
             .order_by(ReferralInfo.referral_date.desc()) \
             .all()
 
-        return jsonify(referrals)
+        print(f"Found {len(referrals)} referrals")  # Debug print
+
+        referral_list = []
+        for referral in referrals:
+            referral_dict = {
+                'id': referral.id,
+                'referral_date': referral.referral_date.isoformat(),
+                'patient_referred': {
+                    'patient_no': patient.patient_no,
+                    'last_name': patient.last_name,
+                    'other_names': patient.other_names
+                },
+                'diagnosis': referral.diagnosis,
+                'referral_comment': referral.referral_comment
+            }
+            referral_list.append(referral_dict)
+
+        return jsonify(referral_list)
     except Exception as e:
-        app.logger.error(f"Error in search_referrals_by_registration: {str(e)}")
-        return jsonify({'error': 'Search failed'}), HTTPStatus.INTERNAL_SERVER_ERROR
+        print(f"Error in search_referrals_by_registration: {str(e)}")  # Debug print
+        return jsonify({'error': f'Search failed: {str(e)}'}), 500
 
 
 @app.route('/api/search-referrals/date/<date>')
@@ -251,21 +278,96 @@ def search_referrals_by_date(date):
             func.date(ReferralInfo.referral_date) == search_date
         ).order_by(ReferralInfo.referral_time.desc()).all()
 
-        return jsonify(referrals)
+        referral_list = []
+        for referral in referrals:
+            patient = referral.patient_referred
+            referral_dict = {
+                'id': referral.id,
+                'referral_date': referral.referral_date.isoformat(),
+                'patient_referred': {
+                    'patient_no': patient.patient_no,
+                    'last_name': patient.last_name,
+                    'other_names': patient.other_names
+                },
+                'diagnosis': referral.diagnosis,
+                'referral_comment': referral.referral_comment
+            }
+            referral_list.append(referral_dict)
+
+        return jsonify(referral_list)
     except Exception as e:
-        app.logger.error(f"Error in search_referrals_by_date: {str(e)}")
-        return jsonify({'error': 'Search failed'}), HTTPStatus.INTERNAL_SERVER_ERROR
+        print(f"Error in search_referrals_by_date: {str(e)}")
+        return jsonify({'error': f'Search failed: {str(e)}'}), 500
 
 
 @app.route('/api/referral/<int:referral_id>')
 def get_referral_details(referral_id):
     try:
         referral = ReferralInfo.query.get_or_404(referral_id)
-        return jsonify(referral)
+        patient = referral.patient_referred
+        mo = referral.mo
+
+        referral_dict = {
+            'id': referral.id,
+            'referral_no': referral.referral_no,
+            'referral_date': referral.referral_date.isoformat(),
+            'referral_time': referral.referral_time,
+            'departure_time': referral.departure_time,
+            'patient_referred': {
+                'patient_no': patient.patient_no,
+                'last_name': patient.last_name,
+                'other_names': patient.other_names,
+                'sex': patient.sex,
+                'age': patient.age
+            },
+            'temperature': referral.temperature,
+            'pulse': referral.pulse,
+            'resp_rate': referral.resp_rate,
+            'bp_sys': referral.bp_sys,
+            'bp_dias': referral.bp_dias,
+            'weight': referral.weight,
+            'tews': referral.tews,
+            'diagnosis': referral.diagnosis,
+            'referral_comment': referral.referral_comment,
+            'mo': {
+                'name': mo.name
+            }
+        }
+
+        return jsonify(referral_dict)
     except Exception as e:
         app.logger.error(f"Error in get_referral_details: {str(e)}")
         return jsonify({'error': 'Failed to fetch referral details'}), HTTPStatus.INTERNAL_SERVER_ERROR
-###################################################
+
+
+@app.route('/api/search-clients')
+def search_clients():
+    try:
+        query = request.args.get('query', '').strip()
+        if len(query) < 3:
+            return jsonify([])
+
+        patients = PatientInfo.query.filter(
+            or_(
+                PatientInfo.patient_no.ilike(f'%{query}%'),
+                PatientInfo.last_name.ilike(f'%{query}%'),
+                PatientInfo.other_names.ilike(f'%{query}%')
+            )
+        ).limit(10).all()
+
+        patient_list = [
+            {
+                'registrationNumber': patient.patient_no,
+                'name': f"{patient.last_name} {patient.other_names}"
+            } for patient in patients
+        ]
+
+        return jsonify(patient_list)
+    except Exception as e:
+        app.logger.error(f"Error in search_patients: {str(e)}")
+        return jsonify({'error': 'Failed to fetch patient suggestions'}), HTTPStatus.INTERNAL_SERVER_ERROR
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
