@@ -1,4 +1,4 @@
-// Function to fetch patient suggestions from the server
+// Fetch patient suggestions
 async function fetchPatientSuggestions(query) {
     if (query.length < 3) {
         document.getElementById("suggestions").style.display = "none";
@@ -42,7 +42,7 @@ document.getElementById("patient-reg-no").addEventListener("input", (e) => {
 });
 
 
-// Populate form fields based on selected patient
+// Populate form fields
 function populatePatientInfo(patient) {
     document.getElementById("patient-reg-no").value = patient.registrationNumber;
     document.getElementById("surname").value = patient.surname;

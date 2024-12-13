@@ -66,77 +66,6 @@
     background-color: green;
 }
 
-/* Search dropdown styles */
-.search-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.search-dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: #fff;
-    min-width: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    padding: 16px;
-    z-index: 1001;
-}
-
-.search-dropdown:hover .search-dropdown-content,
-.search-dropdown.active .search-dropdown-content {
-    display: block;
-}
-
-.search-dropdown-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.search-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.search-input-group label {
-    font-size: 0.875rem;
-    color: #666;
-    font-weight: 500;
-}
-
-.search-input-group input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.875rem;
-}
-
-.search-input-group input:focus {
-    outline: none;
-    border-color: #666;
-}
-
-.search-button {
-    background-color: #008000;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: background-color 0.3s;
-}
-
-.search-button:hover {
-    background-color: #006400;
-}
-
-
 
 * {
   box-sizing: border-box;
@@ -300,7 +229,7 @@ button {
     background-color: #f5f5f5;
 }
 
-/* Make sure the parent of the input and suggestions has relative positioning */
+/* Relative Positioning */
 .current-date {
     position: relative;
 }

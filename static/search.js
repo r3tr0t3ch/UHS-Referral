@@ -1,7 +1,7 @@
 let debounceTimeout;
 let selectedRegNo = null;
 
-// Event listener for registration number input
+// Event listener for folder number input
 document.getElementById('reg-search').addEventListener('input', (e) => {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
@@ -9,7 +9,7 @@ document.getElementById('reg-search').addEventListener('input', (e) => {
     }, 300);
 });
 
-// Handle registration number search form submission
+// Handle folder number search form submission
 function handleRegSearch(event) {
     event.preventDefault();
     const regNo = selectedRegNo || document.getElementById('reg-search').value;
@@ -27,7 +27,7 @@ function handleDateSearch(event) {
     }
 }
 
-// Fetch registration number suggestions
+// Fetch folder number suggestions
 async function fetchRegistrationSuggestions(query) {
     if (query.length < 3) {
         document.getElementById('reg-suggestions').style.display = 'none';
@@ -64,7 +64,7 @@ async function fetchRegistrationSuggestions(query) {
     }
 }
 
-// Search by registration number
+// Search by folder number
 async function searchByRegistration(regNo) {
     try {
         console.log(`Searching for referrals with EXACT registration number: "${regNo}"`);
@@ -128,7 +128,7 @@ function displayResults(referrals) {
     document.getElementById('results-table').style.display = 'table';
 }
 
-// Show referral details in modal
+// Show referral details
 async function showReferralDetails(referralId) {
     try {
         const response = await fetch(`/api/referral/${referralId}`);
@@ -176,7 +176,7 @@ async function showReferralDetails(referralId) {
     }
 }
 
-// Close modal when clicking the close button or outside the modal
+// Close modal
 document.querySelector('.close').onclick = () => {
     document.getElementById('referral-details').style.display = 'none';
 };
@@ -188,7 +188,7 @@ window.onclick = (event) => {
     }
 };
 
-// Close suggestions when clicking outside
+// Close suggestions
 document.addEventListener('click', (event) => {
     const suggestionsBox = document.getElementById('reg-suggestions');
     const searchInput = document.getElementById('reg-search');

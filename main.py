@@ -13,7 +13,6 @@ from flask.logging import create_logger
 import logging
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-
 load_dotenv()
 db = SQLAlchemy()
 
@@ -21,25 +20,22 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    # Configuration
+    # Config
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Handle proxy headers
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
-    # Setup logging
     logger = create_logger(app)
     logger.setLevel(logging.INFO)
 
-    # Initialize extensions
     db.init_app(app)
 
     return app
 
-app = create_app()
 
+app = create_app()
 
 
 # Database Models with type hints
@@ -97,6 +93,7 @@ referral_no = str(random.randint(0, 99999)).zfill(5)
 
 @app.route('/')
 def home():
+    """Serves Hompage"""
     try:
         doctors = Doctors.query.all()
         today_str = datetime.today().strftime('%d-%b-%Y')
@@ -111,6 +108,7 @@ def home():
 
 @app.route('/api/search-patients')
 def search_patients():
+    """Provides JS with DB info"""
     try:
         query = request.args.get('query', '')
         if len(query) < 3:
@@ -136,6 +134,7 @@ def search_patients():
 
 
 def ref_no_gen():
+    """Generates random referral no."""
     global referral_no
     referral_no = str(random.randint(0, 99999)).zfill(5)
 
@@ -204,13 +203,13 @@ def save_referralinfo():
         referral.referred_from = facility_referred
     referral.mo = Doctors.query.filter_by(name=mo).first()
 
-
     db.session.add(referral)
     db.session.commit()
 
 
 @app.route('/log', methods=['POST', 'GET'])
 def log():
+    """Saves info from form to DB"""
     patient_reg_no = request.form["patient-reg-no"]
     if request.method == "POST":
         if PatientInfo.query.filter_by(patient_no=patient_reg_no).first():
@@ -220,35 +219,35 @@ def log():
             save_referralinfo()
         ref_no_gen()
         return redirect('/')
-#######################################################################
+
+
 @app.route('/search')
 def search_page():
+    """Serves search.html"""
     return render_template('search.html')
 
 
 @app.route('/api/search-referrals/registration/<path:reg_no>')
 def search_referrals_by_registration(reg_no):
+    """P"""
     try:
         # URL decode the registration number if needed
         import urllib.parse
         reg_no = urllib.parse.unquote(reg_no)
 
-        print(f"Searching for referrals with registration number: {reg_no}")  # Debug print
+        # print(f"Searching for referrals with registration number: {reg_no}")
 
-        # First, check if the patient exists
         patient = PatientInfo.query.filter_by(patient_no=reg_no).first()
 
         if not patient:
-            print(f"No patient found with registration number: {reg_no}")  # Debug print
+            # print(f"No patient found with registration number: {reg_no}")
             return jsonify({'error': 'No patient found with this registration number'}), 404
 
-        # Find referrals for this patient
         referrals = ReferralInfo.query.filter_by(patient_id=patient.id) \
             .order_by(ReferralInfo.referral_date.desc()) \
             .all()
 
-        print(f"Found {len(referrals)} referrals")  # Debug print
-
+        # print(f"Found {len(referrals)} referrals")
         referral_list = []
         for referral in referrals:
             referral_dict = {
@@ -371,4 +370,6 @@ def search_clients():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)
+
+######################https://github.com/r3tr0t3ch########################
