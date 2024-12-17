@@ -442,3 +442,70 @@ button {
     font-size: 1.5rem;
     cursor: pointer;
 }
+
+/* Login and Register Page Styles */
+.login-register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 70px);
+}
+
+.form-container.auth-form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.form-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.form-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.form-tab.active {
+    border-bottom-color: green;
+}
+
+.auth-form .form-section {
+    margin-bottom: 15px;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.auth-form .toggle-form {
+    margin-top: 15px;
+    font-size: 0.875rem;
+}
+
+.auth-form .toggle-form a {
+    color: green;
+    text-decoration: none;
+}
+
+.auth-form .toggle-form a:hover {
+    text-decoration: underline;
+}
+
+.auth-form #register-form {
+    display: none;
+}

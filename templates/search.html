@@ -1,25 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Referrals</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
-</head>
+{% include "header.html" %}
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="https://uhs.knust.edu.gh/" class="navbar-brand">
-                <img src="{{url_for('static', filename='UHS_LOGO.png')}}" alt="KNUST University Health Services Logo" class="navbar-logo">
-            </a>
-            <div class="navbar-links">
-                <a href="/">Home</a>
-                <a href="/search">Patient Records</a>
-                <a href="#">Reports</a>
-            </div>
-        </div>
-    </nav>
-
     <div class="search-container">
         <h2>Search Referrals</h2>
 

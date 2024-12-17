@@ -1,0 +1,58 @@
+{% include "header.html" %}
+<body>
+    <div class="login-register-container">
+        <div class="form-container auth-form">
+            <div class="form-tabs">
+                <div class="form-tab active" onclick="showLoginForm()">Login</div>
+                <div class="form-tab" onclick="showRegisterForm()">Register</div>
+            </div>
+
+            <form id="login-form" action="/" method="post">
+                <div class="form-section">
+                    <input type="text" name="number" placeholder="Phone Number" required>
+                </div>
+                <div class="form-section">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit">Login</button>
+                <div class="toggle-form">
+                    Don't have an account? <a href="#" onclick="showRegisterForm()">Register</a>
+                </div>
+            </form>
+
+            <form id="register-form" action="/register" method="post">
+                <div class="form-section">
+                    <input type="text" name="fullname" placeholder="Full Name" required>
+                </div>
+                <div class="form-section">
+                    <input type="text" name="number" placeholder="Phone Number" required>
+                </div>
+                <div class="form-section">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-section">
+                    <input type="password" name="confpassword" placeholder="Confirm Password" required>
+                </div>
+                <button type="submit">Register</button>
+                <div class="toggle-form">
+                    Already have an account? <a href="#" onclick="showLoginForm()">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    function showLoginForm() {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('register-form').style.display = 'none';
+        document.querySelector('.form-tabs').children[0].classList.add('active');
+        document.querySelector('.form-tabs').children[1].classList.remove('active');
+    }
+
+    function showRegisterForm() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
+        document.querySelector('.form-tabs').children[0].classList.remove('active');
+        document.querySelector('.form-tabs').children[1].classList.add('active');
+    }
+</script>

@@ -1,45 +1,41 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, jsonify, flash
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func
-from http import HTTPStatus
 from dotenv import load_dotenv
 import os
 import random
-from typing import Optional
-from dataclasses import dataclass
 from http import HTTPStatus
-from flask.logging import create_logger
-import logging
-from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 load_dotenv()
-db = SQLAlchemy()
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+#Database Models with type hints
+class Users(db.Model, UserMixin):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), unique=True, nullable=False)
+    number = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(250), nullable=False)
+    referralinfo = db.relationship("ReferralInfo", back_populates="referring_user")
 
 
-def create_app():
-    app = Flask(__name__)
-
-    # Config
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE")
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
-
-    logger = create_logger(app)
-    logger.setLevel(logging.INFO)
-
-    db.init_app(app)
-
-    return app
-
-
-app = create_app()
-
-
-# Database Models with type hints
-@dataclass
 class PatientInfo(db.Model):
     __tablename__ = "patient_info"
     id: int = db.Column(db.Integer, primary_key=True)
@@ -54,15 +50,13 @@ class PatientInfo(db.Model):
     referralinfo = db.relationship("ReferralInfo", back_populates="patient_referred", cascade="all, delete-orphan")
 
 
-@dataclass
 class Doctors(db.Model):
     __tablename__ = "doctors"
     id: int = db.Column(db.Integer, primary_key=True)
     name: str = db.Column(db.String(150), unique=True, nullable=False, index=True)
-    referralinfo = db.relationship("ReferralInfo", back_populates="mo")
+    referralinfo = db.relationship("ReferralInfo", back_populates="referring_mo")
 
 
-@dataclass
 class ReferralInfo(db.Model):
     __tablename__ = "referral_info"
     id: int = db.Column(db.Integer, primary_key=True)
@@ -71,16 +65,18 @@ class ReferralInfo(db.Model):
     patient_id: int = db.Column(db.Integer, db.ForeignKey("patient_info.id"))
     patient_referred = db.relationship("PatientInfo", back_populates="referralinfo")
     mo_id: int = db.Column(db.Integer, db.ForeignKey("doctors.id"))
-    mo = db.relationship("Doctors", back_populates="referralinfo")
+    referring_mo = db.relationship("Doctors", back_populates="referralinfo")
+    user_id: int = db.Column(db.Integer, db.ForeignKey("users.id"))
+    referring_user = db.relationship("Users", back_populates="referralinfo")
     referred_from: str = db.Column(db.String(200), nullable=False, default="University Hospital, KNUST")
     referral_time: str = db.Column(db.String(15), nullable=False)
     departure_time: str = db.Column(db.String(15), nullable=False)
     temperature: float = db.Column(db.Float, nullable=False)
     pulse: int = db.Column(db.Integer, nullable=False)
-    resp_rate: Optional[int] = db.Column(db.Integer, nullable=True)
+    resp_rate: int = db.Column(db.Integer, nullable=True)
     bp_sys: int = db.Column(db.Integer, nullable=False)
     bp_dias: int = db.Column(db.Integer, nullable=False)
-    weight: Optional[float] = db.Column(db.Float, nullable=True)
+    weight: float = db.Column(db.Float, nullable=True)
     tews: int = db.Column(db.Integer, nullable=False)
     diagnosis: str = db.Column(db.String(100), nullable=False)
     referral_comment: str = db.Column(db.String(250), nullable=False)
@@ -91,7 +87,63 @@ date_format = '%Y-%m-%d'
 referral_no = str(random.randint(0, 99999)).zfill(5)
 
 
-@app.route('/')
+@app.route("/register", methods=["POST", "GET"])
+def register():
+    if request.method == "POST":
+        full_name = request.form['fullname']
+        number = request.form['number']
+
+        if number == Users.query.filter_by(number=number).first():
+            flash("Number already exists. Proceed to Login.")
+            login()
+
+        password = request.form['password']
+        confirm_password = request.form['confpassword']
+
+        if password == confirm_password:
+            new_user = Users()
+            new_user.name = full_name
+            new_user.number = number
+            new_user.password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
+
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user)
+            return redirect('/home')
+
+    return render_template("Login&Register.html")
+
+
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        number = request.form['number']
+        password = request.form['password']
+
+        user = Users.query.filter_by(number=number).first()
+        if  user :
+            password_state = check_password_hash(pwhash=user.password, password=password)
+            if password_state:
+                login_user(user)
+                return redirect("/home")
+
+        else:
+            flash('Number or Password incorrect, please try again.')
+            return redirect('/')
+
+    return render_template("Login&Register.html")
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return render_template("Login&Register.html")
+
+
+
+@app.route('/home')
+@login_required
 def home():
     """Serves Hompage"""
     try:
@@ -107,6 +159,7 @@ def home():
 
 
 @app.route('/api/search-patients')
+@login_required
 def search_patients():
     """Provides JS with DB info"""
     try:
@@ -181,7 +234,7 @@ def save_referralinfo():
     # complaints = request.form["complaints"]
     diagnosis = request.form['diagnosis']
     referral_comment = request.form['referral-comments']
-    mo = request.form.get('officer-name')
+    referring_mo = request.form.get('officer-name')
 
     referral = ReferralInfo()
     referral.patient_referred = PatientInfo.query.filter_by(patient_no=patient_reg_no).first()
@@ -201,13 +254,16 @@ def save_referralinfo():
     referral.referral_comment = referral_comment
     if facility_referred:
         referral.referred_from = facility_referred
-    referral.mo = Doctors.query.filter_by(name=mo).first()
+    referral.referring_mo = Doctors.query.filter_by(name=referring_mo).first()
+    referral.referring_user=current_user
 
     db.session.add(referral)
     db.session.commit()
 
 
+
 @app.route('/log', methods=['POST', 'GET'])
+@login_required
 def log():
     """Saves info from form to DB"""
     patient_reg_no = request.form["patient-reg-no"]
@@ -221,13 +277,17 @@ def log():
         return redirect('/')
 
 
+
 @app.route('/search')
+@login_required
 def search_page():
     """Serves search.html"""
     return render_template('search.html')
 
 
+
 @app.route('/api/search-referrals/registration/<path:reg_no>')
+@login_required
 def search_referrals_by_registration(reg_no):
     """P"""
     try:
@@ -269,7 +329,9 @@ def search_referrals_by_registration(reg_no):
         return jsonify({'error': f'Search failed: {str(e)}'}), 500
 
 
+
 @app.route('/api/search-referrals/date/<date>')
+@login_required
 def search_referrals_by_date(date):
     try:
         search_date = datetime.strptime(date, '%Y-%m-%d').date()
@@ -300,11 +362,12 @@ def search_referrals_by_date(date):
 
 
 @app.route('/api/referral/<int:referral_id>')
+@login_required
 def get_referral_details(referral_id):
     try:
         referral = ReferralInfo.query.get_or_404(referral_id)
         patient = referral.patient_referred
-        mo = referral.mo
+        mo = referral.referring_mo
 
         referral_dict = {
             'id': referral.id,
@@ -339,7 +402,9 @@ def get_referral_details(referral_id):
         return jsonify({'error': 'Failed to fetch referral details'}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
+
 @app.route('/api/search-clients')
+@login_required
 def search_clients():
     try:
         query = request.args.get('query', '').strip()
@@ -370,6 +435,6 @@ def search_clients():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=False)
+    app.run(debug=True)
 
 ######################https://github.com/r3tr0t3ch########################

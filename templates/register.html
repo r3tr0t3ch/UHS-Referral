@@ -1,0 +1,25 @@
+{% include "header.html" %}
+<body>
+   <div class="login-register-container">
+        <div class="form-container auth-form">
+            <form id="register-form" action="/register" method="post">
+                <div class="form-section">
+                    <input type="text" name="fullname" placeholder="Full Name" required>
+                </div>
+                <div class="form-section">
+                    <input type="text" name="number" placeholder="Phone Number" required>
+                </div>
+                <div class="form-section">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-section">
+                    <input type="password" name="confpassword" placeholder="Confirm Password" required>
+                </div>
+                <button type="submit">Register</button>
+                <div class="toggle-form">
+                    Already have an account? <a href="#" onclick="showLoginForm()">Login</a>
+                </div>
+            </form>
+        </div>
+   </div>
+</body>
