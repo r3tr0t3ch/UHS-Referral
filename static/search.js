@@ -84,7 +84,7 @@ async function searchByRegistration(regNo) {
         displayResults(referrals);
     } catch (error) {
         console.error('Error searching by registration:', error);
-        alert('Error searching for referrals. Please try again.');
+        showPopup('Error searching for referrals. Please try again.');
     }
 }
 
@@ -99,7 +99,7 @@ async function searchByDate(date) {
         displayResults(referrals);
     } catch (error) {
         console.error('Error searching by date:', error);
-        alert('Error searching for referrals. Please try again.');
+        showPopup('Error searching for referrals. Please try again.');
     }
 }
 
@@ -110,7 +110,7 @@ function displayResults(referrals) {
 
     if (referrals.length === 0) {
         document.getElementById('results-table').style.display = 'none';
-        alert('No referrals found for your search criteria.');
+        showPopup('No referrals found for your search criteria.');
         return;
     }
 
@@ -120,7 +120,7 @@ function displayResults(referrals) {
 
         row.insertCell(0).textContent = new Date(referral.referral_date).toLocaleDateString();
         row.insertCell(1).textContent = referral.patient_referred.patient_no;
-        row.insertCell(2).textContent = `${referral.patient_referred.last_name} ${referral.patient_referred.other_names}`;
+        row.insertCell(2).textContent = `${referral.patient_referred.full_name}`;
         row.insertCell(3).textContent = referral.diagnosis;
         row.insertCell(4).textContent = referral.referral_comment;
     });
@@ -142,7 +142,7 @@ async function showReferralDetails(referralId) {
             <div class="referral-details-grid">
                 <h4>Patient Information</h4>
                 <p>Registration Number: ${referral.patient_referred.patient_no}</p>
-                <p>Name: ${referral.patient_referred.last_name} ${referral.patient_referred.other_names}</p>
+                <p>Name: ${referral.patient_referred.full_name} </p>
                 <p>Sex: ${referral.patient_referred.sex}</p>
                 <p>Age: ${referral.patient_referred.age}</p>
 
@@ -166,13 +166,15 @@ async function showReferralDetails(referralId) {
 
                 <h4>Referring Officer</h4>
                 <p>Name: ${referral.mo.name}</p>
+
+                <button>Close</button>
             </div>
         `;
 
         document.getElementById('referral-details').style.display = 'block';
     } catch (error) {
         console.error('Error fetching referral details:', error);
-        alert('Error loading referral details. Please try again.');
+        showPopup('Error loading referral details. Please try again.');
     }
 }
 
@@ -197,3 +199,20 @@ document.addEventListener('click', (event) => {
         suggestionsBox.style.display = 'none';
     }
 });
+
+// Function to show a custom popup
+function showPopup(message) {
+  const popup = document.getElementById("popup-handler");
+  const popupMessage = document.getElementById("popup-message");
+  popupMessage.textContent = message;
+  popup.style.display = "block";
+}
+
+// Function to close the popup
+function closePopup() {
+  const popup = document.getElementById("popup-handler");
+  popup.style.display = "none";
+}
+
+// Event listener for okay button
+document.getElementById("popup-ok").onclick = closePopup;

@@ -20,7 +20,7 @@ db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = '/login'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -40,8 +40,7 @@ class PatientInfo(db.Model):
     __tablename__ = "patient_info"
     id: int = db.Column(db.Integer, primary_key=True)
     patient_no: str = db.Column(db.String(10), unique=True, nullable=False, index=True)
-    last_name: str = db.Column(db.String(100), nullable=False)
-    other_names: str = db.Column(db.String(100), nullable=False)
+    full_name: str = db.Column(db.String(100), nullable=False)
     sex: str = db.Column(db.String(10), nullable=False)
     age: int = db.Column(db.Integer, nullable=False)
     dob: datetime = db.Column(db.Date, nullable=False)
@@ -114,7 +113,7 @@ def register():
     return render_template("Login&Register.html")
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         number = request.form['number']
@@ -125,11 +124,11 @@ def login():
             password_state = check_password_hash(pwhash=user.password, password=password)
             if password_state:
                 login_user(user)
-                return redirect("/home")
+                return redirect("/")
 
         else:
             flash('Number or Password incorrect, please try again.')
-            return redirect('/')
+            return redirect('/login')
 
     return render_template("Login&Register.html")
 
@@ -142,7 +141,7 @@ def logout():
 
 
 
-@app.route('/home')
+@app.route('/')
 @login_required
 def home():
     """Serves Hompage"""
@@ -173,8 +172,7 @@ def search_patients():
 
         return jsonify([{
             'registrationNumber': p.patient_no,
-            'surname': p.last_name,
-            'otherNames': p.other_names,
+            'full_name': p.full_name,
             'sex': p.sex,
             'dateOfBirth': p.dob.strftime('%Y-%m-%d'),
             'age': p.age,
@@ -195,8 +193,7 @@ def ref_no_gen():
 def save_patientinfo():
     """Collects Patient Info from form and saves to the database."""
     patient_reg_no = request.form["patient-reg-no"]
-    surname = request.form["surname"]
-    oname = request.form["other-names"]
+    fname = request.form["fname"]
     sex = request.form["sex"]
     dob = request.form['dob']
     age = request.form['age']
@@ -205,8 +202,7 @@ def save_patientinfo():
 
     patient = PatientInfo()
     patient.patient_no = patient_reg_no
-    patient.last_name = surname
-    patient.other_names = oname
+    patient.full_name = fname
     patient.sex = sex
     patient.dob = datetime.strptime(dob, date_format).date()
     patient.age = age
@@ -231,7 +227,6 @@ def save_referralinfo():
     bp_dias = int(request.form["diastolic"])
     weight = float(request.form["weight"])
     tews = int(request.form["tewsCode"])
-    # complaints = request.form["complaints"]
     diagnosis = request.form['diagnosis']
     referral_comment = request.form['referral-comments']
     referring_mo = request.form.get('officer-name')
@@ -249,7 +244,6 @@ def save_referralinfo():
     referral.bp_dias = bp_dias
     referral.weight = weight
     referral.tews = tews
-    # referral.patient_complaints = complaints
     referral.diagnosis = diagnosis
     referral.referral_comment = referral_comment
     if facility_referred:
@@ -315,8 +309,7 @@ def search_referrals_by_registration(reg_no):
                 'referral_date': referral.referral_date.isoformat(),
                 'patient_referred': {
                     'patient_no': patient.patient_no,
-                    'last_name': patient.last_name,
-                    'other_names': patient.other_names
+                    'full_name': patient.full_name,
                 },
                 'diagnosis': referral.diagnosis,
                 'referral_comment': referral.referral_comment
@@ -347,8 +340,7 @@ def search_referrals_by_date(date):
                 'referral_date': referral.referral_date.isoformat(),
                 'patient_referred': {
                     'patient_no': patient.patient_no,
-                    'last_name': patient.last_name,
-                    'other_names': patient.other_names
+                    'full_name': patient.full_name,
                 },
                 'diagnosis': referral.diagnosis,
                 'referral_comment': referral.referral_comment
@@ -377,8 +369,7 @@ def get_referral_details(referral_id):
             'departure_time': referral.departure_time,
             'patient_referred': {
                 'patient_no': patient.patient_no,
-                'last_name': patient.last_name,
-                'other_names': patient.other_names,
+                'full_name': patient.full_name,
                 'sex': patient.sex,
                 'age': patient.age
             },
@@ -414,15 +405,14 @@ def search_clients():
         patients = PatientInfo.query.filter(
             or_(
                 PatientInfo.patient_no.ilike(f'%{query}%'),
-                PatientInfo.last_name.ilike(f'%{query}%'),
-                PatientInfo.other_names.ilike(f'%{query}%')
+                PatientInfo.full_name.ilike(f'%{query}%'),
             )
         ).limit(10).all()
 
         patient_list = [
             {
                 'registrationNumber': patient.patient_no,
-                'name': f"{patient.last_name} {patient.other_names}"
+                'name': f"{patient.full_name}"
             } for patient in patients
         ]
 

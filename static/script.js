@@ -45,8 +45,7 @@ document.getElementById("patient-reg-no").addEventListener("input", (e) => {
 // Populate form fields
 function populatePatientInfo(patient) {
     document.getElementById("patient-reg-no").value = patient.registrationNumber;
-    document.getElementById("surname").value = patient.surname;
-    document.getElementById("other-names").value = patient.otherNames;
+    document.getElementById("fname").value = patient.full_name;
     document.getElementById("dob").value = patient.dateOfBirth;
     document.getElementById("age").value = patient.age;
     document.getElementById("contact-person").value = patient.contactPerson;
