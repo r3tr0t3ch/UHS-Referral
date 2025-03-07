@@ -108,7 +108,7 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
-            return redirect('/home')
+            return redirect('/')
 
     return render_template("Login&Register.html")
 
