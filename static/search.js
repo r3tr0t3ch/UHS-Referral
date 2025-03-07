@@ -126,6 +126,7 @@ function displayResults(referrals) {
     });
 
     document.getElementById('results-table').style.display = 'table';
+    document.getElementById('results-table').style.backgroundColor = '#ddd';
 }
 
 // Show referral details
@@ -166,12 +167,11 @@ async function showReferralDetails(referralId) {
 
                 <h4>Referring Officer</h4>
                 <p>Name: ${referral.mo.name}</p>
-
-                <button>Close</button>
             </div>
         `;
 
         document.getElementById('referral-details').style.display = 'block';
+        
     } catch (error) {
         console.error('Error fetching referral details:', error);
         showPopup('Error loading referral details. Please try again.');
@@ -183,11 +183,8 @@ document.querySelector('.close').onclick = () => {
     document.getElementById('referral-details').style.display = 'none';
 };
 
-window.onclick = (event) => {
-    const modal = document.getElementById('referral-details');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
+document.querySelector('.close-button').onclick = (event) => {
+    const modal = document.getElementById('referral-details').style.display = 'none';
 };
 
 // Close suggestions

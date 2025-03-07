@@ -2,7 +2,7 @@
   <body>
 
     <div class="form-container">
-      <h2>Referral Form</h2>
+      <h2>HOSPITAL  REFERRAL  FORM</h2>
 
       <form action="/log" method="post">
         <div class="form-section one">
@@ -23,38 +23,7 @@
             {{referral_no}}
           </div>
         </div>
-
-        <div class="form-section three">
-          <label for="facility-referred"></label>
-          <input
-            type="text"
-            id="facility-referred"
-            name="facility-referred"
-            placeholder="Name & Address of Health Facility Referred To"
-          />
-          <div class="time">
-            <div>
-              <label for="time-referred">Time Referred</label>
-            <input
-              type="time"
-              id="time-referred"
-              name="time-referred"
-            />
-            </div>
-
-
-            <div>
-              <label for="departure">Time of Departure (if Emergency)</label>
-            <input
-              type="time"
-              id="departure"
-              name="departure-time"
-
-            />
-            </div>
-          </div>
-        </div>
-
+<br>
         <h3>Patient/Client Information</h3>
         <div class="form-section four">
           <label for="fname">Full Name</label>
@@ -101,6 +70,41 @@
           <label for="contact-number">Telephone No. of Contact Person</label>
           <input type="text" id="contact-number" name="contact-number" required/>
         </div>
+<br>
+        <h3>Referral Details</h3>
+        <div class="form-section three">
+          <label for="facility-referred"></label>
+          <input
+            type="text"
+            id="facility-referred"
+            name="facility-referred"
+            placeholder="Name & Address of Health Facility Referred To"
+          />
+          <div class="time">
+            <div>
+              <label for="time-referred">Time Referred</label>
+            <input
+              type="time"
+              id="time-referred"
+              name="time-referred"
+            />
+            </div>
+
+
+            <div>
+              <label for="departure">Time of Departure (if Emergency)</label>
+            <input
+              type="time"
+              id="departure"
+              name="departure-time"
+
+            />
+            </div>
+          </div>
+        </div>
+
+        
+        <br>
 
                 <h3>Examination Findings</h3>
         <div class="form-section six">
@@ -140,7 +144,7 @@
         </div>
 
         <div class="form-section eight">
-          <label for="diagnosis">Diagnosis</label>
+          <label for="diagnosis">Referral Diagnosis</label>
           <textarea id="diagnosis" name="diagnosis" required></textarea>
         </div>
 

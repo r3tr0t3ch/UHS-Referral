@@ -425,6 +425,5 @@ def search_clients():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
-
+    app.run()
 ######################https://github.com/r3tr0t3ch########################
