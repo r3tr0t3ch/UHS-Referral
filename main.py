@@ -208,6 +208,7 @@ def save_patientinfo():
     patient.age = age
     patient.relative = relative
     patient.relative_contact = relative_contact
+    print(patient.sex)
 
     db.session.add(patient)
     db.session.commit()
@@ -425,5 +426,5 @@ def search_clients():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run()
+    app.run(debug=True)
 ######################https://github.com/r3tr0t3ch########################

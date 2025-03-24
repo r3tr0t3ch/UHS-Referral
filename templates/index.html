@@ -24,7 +24,7 @@
           </div>
         </div>
 <br>
-        <h3>Patient/Client Information</h3>
+        <h3>Client Information</h3>
         <div class="form-section four">
           <label for="fname">Full Name</label>
           <input type="text" id="fname" name="fname" required/>
@@ -36,14 +36,10 @@
             <div class="client">
               <label>Sex</label>
               <div class="radio-group">
-                <label for="male"
-                  ><input type="radio" id="male" name="sex" value="Male" />
-                  Male</label
-                >
-                <label for="female"
-                  ><input type="radio" id="female" name="sex" value="Female" />
-                  Female</label
-                >
+                <select class="form-select" aria-label="Default select example" name="sex">
+                  <option value="Male" selected>Male</option>
+                  <option  value="Female">Female</option>
+                </select>
               </div>
             </div>
 
@@ -61,14 +57,17 @@
           </div>
         </div>
 
-        <div class="form-section five">
+         <div class="form-section five container">
+          <div class="name-ofcontact-person col-5 ml-5">
           <label for="contact-person"
-            >Name & Address of Contact Person/Relative</label>
-
+            >Name of Contact Person</label>
           <input type="text" id="contact-person" name="contact-person" required/>
+        </div>
 
+        <div class="number-of-contact-person col-5">
           <label for="contact-number">Telephone No. of Contact Person</label>
           <input type="text" id="contact-number" name="contact-number" required/>
+        </div>
         </div>
 <br>
         <h3>Referral Details</h3>
@@ -92,7 +91,7 @@
 
 
             <div>
-              <label for="departure">Time of Departure (if Emergency)</label>
+              <label for="departure">Time of Departure</label>
             <input
               type="time"
               id="departure"
@@ -107,21 +106,20 @@
         <br>
 
                 <h3>Examination Findings</h3>
-        <div class="form-section six">
-          <div class="findings">
+       <div class="form-section six container">
+          <div class="findings-one row">
+          <div class="findings col">
             <label for="temperature">Temperature</label>
             <input type="text" id="temperature" name="temperature" required/>
           </div>
-          <div class="findings">
+
+          <div class="findings col">
             <label for="pulse">Pulse</label>
             <input type="number" id="pulse" name="pulse" required/>
           </div>
-          <div class="findings">
-            <label for="respiratory-rate">R.R</label>
-            <input type="number" id="respiratory-rate" name="respiratory-rate" required/>
-          </div>
 
-          <div class="findings">
+
+          <div class="findings col">
             <p class="bp">BP</p>
             <div class="BP-Values">
               <label for="systolic"></label>
@@ -131,22 +129,33 @@
               <input type="number" name="diastolic" id="diastolic" required/>
             </div>
           </div>
+        </div>
 
-          <div class="findings">
+
+
+        <div class="findings-two row">
+          <div class="findings col">
+            <label for="respiratory-rate">R.R</label>
+            <input type="number" id="respiratory-rate" name="respiratory-rate" required/>
+          </div>
+
+          <div class="findings col">
             <label for="weight">WT</label>
             <input type="text" id="weight" name="weight" required/>
           </div>
 
-          <div class="findings">
+          <div class="findings col">
             <label for="tewsCode">TEW Score</label>
             <input type="number" name="tewsCode" id="tewsCode" required/>
           </div>
         </div>
+      </div>
 
         <div class="form-section eight">
           <label for="diagnosis">Referral Diagnosis</label>
           <textarea id="diagnosis" name="diagnosis" required></textarea>
         </div>
+
 
 
         <div class="form-section ten">
