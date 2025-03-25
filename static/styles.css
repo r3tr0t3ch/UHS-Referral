@@ -127,10 +127,6 @@ body {
   justify-content: space-around;
 }
 
-.five {
-  display: flex;
-  justify-content: space-between;
-}
 
 .client {
   display: flex;
@@ -689,7 +685,6 @@ button:hover {
   .three,
   .four,
   .five,
-  .six,
   .seven,
   .eight,
   .nine,
@@ -699,11 +694,19 @@ button:hover {
     flex-direction: column;
   }
 
+  .form-section.six,.findings-one,.findings-two {
+    display:flex;
+    flex-direction: column;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+  }
+
   .eleven > select {
     width: 100%;
   }
   button[type="submit"] {
-    width: 100vw;
+    width: 100%;
   }
 
   .search-options {
