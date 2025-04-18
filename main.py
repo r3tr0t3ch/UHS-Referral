@@ -202,13 +202,13 @@ def save_patientinfo():
 
     patient = PatientInfo()
     patient.patient_no = patient_reg_no
-    patient.full_name = fname
+    patient.full_name = fname.title()
     patient.sex = sex
     patient.dob = datetime.strptime(dob, date_format).date()
     patient.age = age
-    patient.relative = relative
+    patient.relative = relative.title()
     patient.relative_contact = relative_contact
-    print(patient.sex)
+
 
     db.session.add(patient)
     db.session.commit()
